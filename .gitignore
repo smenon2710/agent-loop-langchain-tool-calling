@@ -25,6 +25,12 @@ env/
 .coverage
 htmlcov/
 
+# Local model experiments and intermediate test results
+/predictable_agent.py
+/agent_loop_*_probe.py
+/verify_agent_loop*.py
+/agent_loop_*results.json*
+
 # OS / editor
 .DS_Store
 .idea/

@@ -5,14 +5,16 @@ load_dotenv()
 from langchain.chat_models import init_chat_model
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
-from langsmith import Client, traceable
+from langsmith import traceable
 
-client = Client()
 
 
 MAX_ITERATIONS = 10
-#MODEL="LiquidAI/lfm2.5-1.2b-instruct:q4_k_m"
-MODEL="qwen3:1.7b"
+#MODEL="LiquidAI/lfm2.5-1.2b-instruct:q4_k_m"     ##tested and not working as expected
+MODEL="qwen3:1.7b"   ##instructor used
+##MODEL="qwen3.5:4b"   ##shows latecy as compared to qwen3:1.7b, heavier model
+##MODEL="qwen3.5:0.8b"  ##worked well with reasoning = False
+##MODEL="qwen3.5:2b"    ##not generating required output
 
 @tool
 def get_product_price(product: str) -> float:
@@ -34,7 +36,7 @@ def apply_discount(price: float, discount_tier: str) -> float:
 
 # ---Agent Loop---
 
-@traceable(name="Langchain Agent Loop", client=client)
+@traceable(name="Langchain Agent Loop")
 def run_agent(question:str):
     tools = [get_product_price, apply_discount]
     tools_dict = {t.name: t for t in tools}
@@ -104,10 +106,6 @@ def run_agent(question:str):
 
 
 if __name__=="__main__":
-    try:
         print("Hello LangChain Agent (.bind_tools)!")
         print()
         result = run_agent("What is the price of a laptop after applying a gold discount?")
-    finally:
-        # Finish sending traces before Python starts shutting down.
-        client.flush()
